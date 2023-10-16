@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.0.js"
+            integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM="
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<input type="hidden" th:value="${session.id}" id="login_Id"/>
+<input type="hidden" th:value="${memberId}" id="board_memberId"/>
+<input type="hidden" th:value="${board.id}" id="boardId"/>
+<input type="hidden" th:value="${page}" id="pageNo"/>
+<form  id="frm" >
+    <table>
+        <caption>게시판 상세</caption>
+        <tr>
+            <th width="20%">제목</th>
+            <td width="60%" th:text="${board.title}"></td>
+            <th width="10%">조회수</th>
+            <td width="10%" th:text="${board.board_cnt}"></td>
+        </tr>
+        <tr>
+            <th>글쓴이</th>
+            <td th:text="${board.name}"></td>
+            <th>등록일</th>
+            <td th:text="${#temporals.format(board.regdate, 'MM/dd')}">
+        </tr>
+        <tr th:if="${board.fileId!=null}">
+            <th>파일</th>
+            <td> <a th:href="@{/downloadFile.do(fileName=${file.fileName})}" th:text="${file.fileName}"></a></td>
+            <th>다운로드</th>
+            <td th:text="${file.fileDownCnt}"></td>
+        </tr>
+        <tr>
+            <th>내용</th>
+            <td height="50" colspan="3" th:text="${board.content}">
+            </td>
+        </tr>
+        <tr th:if="${ext eq 'png' or ext eq 'jpg' or ext eq 'gif'}">
+            <th>이미지</th>
+            <td colspan="3"><img th:src="@{'/image/'+${file.fileName}}" alt="Image" width="300px" height="300px"></td>
+        </tr>
+        <tr>
+            <th colspan="4">
+                <button type="button" id="backPage">목록</button>
+                <button type="button" id="btn_modify">수정</button>
+                <button type="button" id="btn_delete">삭제</button>
+            </th>
+        </tr>
+    </table>
+</form>
+</body>
+<script type="text/javascript">
+	$(function(){
+		let login_Id = $('#login_Id').val();
+		let board_memberId = $('#board_memberId').val();
+		let boardId = $('#boardId').val();
+		let page = $('#pageNo').val();
+		if(login_Id !== board_memberId){
+		    $('#btn_modify').hide();
+	        $('#btn_delete').hide();
+		}
+
+		$('#btn_modify').click(function(){
+			location.href = "boardModify.do?boardId="+boardId+"&page="+page;
+		});
+
+		$('#backPage').click(function(){
+		    location.href="/boardList.do?page="+page;
+		});
+
+		$('#btn_delete').click(function(){
+			if(confirm("정말 삭제하시겠습니까?")){
+				$.ajax({
+					type:"POST",
+					url:"deleteBoard.do",
+					data:{boardId:boardId},
+					dataType:"text",
+					success:function(response){
+						if(response=="성공"){
+							alert("성공적으로 삭제되었습니다.");
+							location.href="/boardList.do?page="+page;
+						}else{
+							alert("삭제에 실패하였습니다.");
+						}
+					},
+					error:function(error){
+						alert("서버 오류 발생 관리자에게 문의해주세요.");
+					}
+				});
+			}
+		});
+	});
+</script>
+</html>

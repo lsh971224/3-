@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
+    <script src="..//script/jquery-ui.js"></script>
+
+    <script type="text/javascript">
+        $(function(){
+            var boardId = $('#boardId').val();
+            let page = $('#page').val();
+        	$('.remove-file').click(function(){
+			let tdElement = $(this).parent();
+			tdElement.empty();
+		    });
+		    $('#btn_cancle').click(function(){
+               location.href="/boardDetail.do?id="+boardId+"&page="+page;
+		    });
+            $('#btn_modify').click(function(){
+                let title = $.trim($('#title').val());
+                let content = $.trim($('#content').val());
+
+                if(title==""){
+                    alert("제목을 입력해주세요.");
+                    $('#title').focus();
+                    return false;
+                }
+                if(content==""){
+                    alert("내용을 입력해주세요.");
+                    $('#content').focus();
+                    return false;
+                }
+                var formData = new FormData($('#frm')[0]);
+                console.log(formData);
+                $.ajax({
+                    type:"POST",
+                    data:formData,
+                    url : "boardModifySave.do",
+                    dataType : "text", // 리턴 타입
+                    processData: false,
+		            contentType: false,
+                    success : function(data) {
+                        if (data == "성공") {
+                            alert("성공적으로 수정되었습니다.");
+                            location.href="/boardDetail.do?id="+boardId+"&page="+page;
+                        } else {
+                            alert("저장실패");
+                        }
+                    },
+                    error : function() {
+                        alert("오류발생. 관리자에게 문의해주세요.");
+                    }
+                });
+            });
+        })
+</script>
+</head>
+<body>
+<form  id="frm" enctype="multipart/form-data">
+    <input type="hidden" th:value="${board.id}" name="id" id="boardId"/>
+    <input type="hidden" th:value="${page}" id="page"/>
+    <table>
+        <caption>게시판 상세</caption>
+        <tr>
+            <th width="20%">제목</th>
+            <td width="80%"><input type="text" id="title" name="title" th:value="${board.title}"/></td>
+        </tr>
+        <tr>
+            <th>글쓴이</th>
+            <td th:text="${board.name}"></td>
+        </tr>
+        <tr>
+            <th>내용</th>
+            <td><textarea class="textarea" name="content" id="content"
+                          cols="50" rows="20" th:value="${board.content}" th:text="${board.content}"></textarea>
+            </td>
+        </tr>
+        <tr th:if="${board.fileId!=null}">
+            <th>기존파일</th>
+            <td>
+                <input type="hidden" th:value="${file.fileName}" name="fileName" />
+                <span th:text="${file.fileName}"  th:value="${file.fileName}"></span>
+                <button type="button" class="remove-file">x</button>
+            </td>
+        </tr>
+        <tr>
+            <th>첨부파일</th>
+            <td><input type="file" name="uploadFile"></td>
+        </tr>
+        <tr>
+            <th>등록일</th>
+            <td th:text="${#temporals.format(board.regdate, 'MM/dd-HH:mm')}">
+        </tr>
+        <tr>
+            <th colspan="2">
+                <button type="button" id="btn_cancle">취소</button>
+                <button type="button" id="btn_modify">수정하기</button>
+            </th>
+        </tr>
+    </table>
+</form>
+</body>
+</html>

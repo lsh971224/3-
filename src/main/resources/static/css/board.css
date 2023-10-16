@@ -1,0 +1,58 @@
+* {
+	padding: 0;
+	margin: 0;
+}
+html, body {
+	height: 100%;
+	background: #fff-fff;
+}
+button {
+	font-size: 9pt;
+}
+
+table {
+	width: 600px;
+	border-collapse: collapse;
+}
+
+th, td {
+	text-align: center;
+	border: 1px solid #cccccc;
+	padding: 3px;
+}
+
+
+th a {
+	text-decoration: none;
+}
+
+.input1 {
+	width: 98%;
+}
+
+.textarea {
+	width: 98%;
+	height: 70px;
+}
+
+.div1 {
+	font-size: 15pt;
+	font-style: italic;
+}
+
+.div2 {
+	width: 600px;
+	text-align: left;
+	font-size: 8pt;
+}
+
+
+#topNavContainer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100px;
+}
+button{
+    border:1px solid;
+}

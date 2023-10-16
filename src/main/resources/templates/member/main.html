@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
+<body>
+<div id="topNavContainer">
+    <div id="ss"  th:replace="include/topnav.html :: nav"></div>
+</div>
+<div class="topNavContainer">
+<h1 th:text="'안녕하세요, ' + ${session.name} + '님'"></h1>
+</div>
+</body>
+</html>

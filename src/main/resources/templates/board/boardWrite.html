@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"
+            integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM="
+            crossorigin="anonymous"></script>
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
+    <script type="text/javascript">
+	function fn_submit() {
+		$('#title').val($.trim($('#title').val()));
+
+		if ($.trim($("#title").val()) == "") {
+			alert("제목을 입력해주세요.");
+			$("#title").focus();
+			return false;
+		}
+
+		$('#content').val($.trim($('#content').val()));
+
+		if ($.trim($("#content").val()) == "") {
+			alert("내용을 입력해주세요.");
+			$("#content").focus();
+			return false;
+		}
+
+		 var formData = new FormData($('#frm')[0]); // FormData 객체 생성
+
+		$.ajax({
+			type : 'POST',
+			data : formData,
+			url : "boardWriteSave.do",
+			processData: false,
+		    contentType: false,
+			dataType : "text", // 리턴 타입
+			success : function(data) {
+				if (data == "성공") {
+					alert("성공적으로 작성되었습니다.");
+					location.href = "/boardList.do";
+				} else {
+					alert("저장실패");
+					return false;
+				}
+			},
+			error : function() {
+				alert("오류 발생 관리자에게 문의해주세요.");
+			}
+
+		});
+	}
+</script>
+</head>
+<body>
+<form id="frm" enctype="multipart/form-data">
+    <table>
+        <caption>게시판 등록</caption>
+        <tr>
+            <th width="20%"><label for="title">제목</label></th>
+            <td width="80%"><input type="text" name="title" id="title"
+                                   class="input1" /></td>
+        </tr>
+        <tr>
+            <th>내용</th>
+            <td><textarea class="textarea" name="content" id="content"
+                          cols="50" rows="20"></textarea></td>
+        </tr>
+        <tr>
+            <th>첨부파일</th>
+            <td><input type="file" name="uploadFile"></td>
+        </tr>
+        <tr>
+            <th colspan="2">
+                <button type="button" onclick="location.href='/boardList.do'">돌아가기</button>
+                <button onclick="fn_submit(); return false;" type="submit">저장</button>
+            </th>
+        </tr>
+    </table>
+</form>
+</body>
+</html>

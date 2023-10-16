@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>내비</title>
+</head>
+<body>
+<div class="div_frm">
+<nav>
+<table th:fragment="nav">
+  <tr>
+    <th width="25%">홈</th>
+    <th width="25%"><a th:href="@{/boardList.do}">게시판</a></th>
+    <th width="25%" th:if="${session.name == null}"><a th:href="@{/createMember.do}">회원가입</a></th>
+    <th width="25%" th:if="${session.name == null}"><a th:href="@{/loginMember.do}">로그인</a></th>
+    <th width="25%" th:if="${session.name != null}"><a th:href="@{/memberMain.do}">회원정보</a></th>
+    <th width="25%" th:if="${session.name != null}"><a th:href="@{/memberLogout.do}">로그아웃</a></th>
+  </tr>
+</table>
+</nav>
+</div>
+</body>
+</html>

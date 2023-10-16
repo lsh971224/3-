@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"
+            integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM="
+            crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
+    <style>
+        .top {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div id="topNavContainer">
+    <div id="ss" th:replace="include/topnav.html :: nav"></div>
+</div>
+<div class="top">
+    <div class="div1">일반 게시판 목록</div>
+    <div class="div2">
+        <form name="frm" id="frm" method="get" th:action="@{/boardList.do}">
+            <select name="searchType" id="searchType">
+                <option th:value="title"  th:selected="${searchMap.type == 'title'}">제목</option>
+                <option th:value="name" th:selected="${searchMap.type == 'name'}">글쓴이</option>
+            </select>
+            <input type="text" name="searchContent" id="searchContent" th:value="${searchMap.content}">
+            <button type="submit" id="btn_search">검색</button>
+            <input type="radio" name="cellDown" value="csv">csv
+            <input type="radio" name="cellDown" value="excelxls">excel.xls
+            <input type="radio" name="cellDown" value="excelxlsx">excel.xlsx
+            <button type="button" id="cellDown"  style="display:inline-block;">다운로드</button>
+        </form>
+    </div>
+    <div class="div2">
+        <form enctype="multipart/form-data" id="fileUploadForm">
+            <input type="file" id="csvfile" name="csvfile"/>
+            <button type="button" id="csv_upload">csv업로드</button>
+        </form>
+    </div>
+    <div class="div2">
+        <form enctype="multipart/form-data" id="excelUpload">
+            <input type="file" id="excelfile" name="excelfile"/>
+            <button type="button" id="excel_upload">excel업로드</button>
+        </form>
+    </div>
+    <div>
+        <p th:text="'전체 게시글 수 : '+${boardList.totalElements}" style="display:inline-block"></p>
+
+    </div>
+    <table>
+        <thead>
+        <tr>
+            <th width="15%">번호</th>
+            <th width="40%">제목</th>
+            <th width="15%">글쓴이</th>
+            <th width="10%">조회수</th>
+            <th width="20%">등록일</th>
+        </tr>
+        </thead>
+        <tbody id="tbody">
+        <tr align="center" th:each="vo,voStatus:${boardList}">
+            <td th:text="${boardList.totalElements - boardList.number * boardList.size - voStatus.index}"></td>
+            <td align="left">
+                <a th:href="@{boardDetail.do(id=${vo.id},page=${boardList.pageable.pageNumber})}" th:text="${vo.title}">게시물 제목</a>
+            </td>
+            <td th:text="${vo.name}"></td>
+            <td th:text="${vo.board_cnt}"></td>
+            <td th:text="${#temporals.format(vo.regdate, 'MM/dd-HH:mm')}">
+            </td>
+        </tr>
+        </c:forEach>
+        <tr th:if="${boardList == null or boardList.isEmpty()}">
+            <td colspan="5">존재하지 않는 게시글입니다.</td>
+        </tr>
+        </tbody>
+    </table>
+    <div style="margin-top: 5px; text-align: right; width: 600px">
+        <button type="button" id="btn_Write">글쓰기</button>
+    </div>
+    <div th:if="${!boardList.isEmpty()}">
+        <ul class="pagination"
+            th:with="
+            pageNumber = ${boardList.pageable.pageNumber},
+            pageSize = ${boardList.pageable.pageSize},
+            totalPages = ${boardList.totalPages},
+            startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+            tempEndPage = ${startPage + pageSize - 1},
+            endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})">
+
+            <li th:classappend="${boardList.first} ? 'disabled'" class="page-item">
+                <a class="page-link" th:href="${boardList.first} ? '#' : @{boardList.do(page=${pageNumber - 1},searchType=${searchMap.type}, searchContent=${searchMap.content})}">
+                    <span aria-hidden="true">&lt;</span>
+                </a>
+            </li>
+            <li th:each="page: ${#numbers.sequence(startPage, endPage)}" th:classappend="${page == pageNumber + 1} ? 'active'" class="page-item">
+                <a th:text="${page}" class="page-link" th:href="@{boardList.do(page=${page - 1},searchType=${searchMap.type}, searchContent=${searchMap.content})}"></a>
+            </li>
+
+            <li th:classappend="${boardList.last} ? 'disabled'" class="page-item">
+                <a class="page-link" th:href="${boardList.last} ? '#' : @{boardList.do(page=${pageNumber + 1},searchType=${searchMap.type}, searchContent=${searchMap.content})}" aria-label="Next">
+                    <span aria-hidden="true">&gt;</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+	$(function() {
+	    $('#cellDown').click(function(){
+	        let selectFile = $('input[name="cellDown"]:checked').val();
+	        if(selectFile==null){
+	            alert("다운 받을 항목을 골라주세요.");
+	            return false;
+	        }
+	        if(selectFile =='csv'){
+	            location.href='/excelCsvDownload.do';
+	        }else if(selectFile == 'excelxls'){
+                location.href='/excelDownload.do?exten='+selectFile;
+	        }else if(selectFile=='excelxlsx'){
+	            location.href='/excelDownload.do?exten='+selectFile;
+	        }
+	    });
+		$('#btn_Write').click(function() {
+			location.href = "/boardWrite.do";
+		});
+		// excel 업로드
+		$('#excel_upload').click(function(){
+			  let formData = new FormData($('#excelUpload')[0]); // FormData 객체 생성
+			  let fileInput = $('#excelfile')[0];
+			  if(fileInput.files.length===0){
+				  alert("파일을 선택해주세요.");
+				  return false;
+			  }
+			$.ajax({
+				type : 'POST',
+				data : formData,
+				url : "excelBoardInsert.do",
+				cache : false,
+			    processData: false,
+			    contentType: false,
+				success : function(data) {
+					   if(data.result=='ok'){
+					    alert("성공적으로 업로드 완료");
+					    location.href="boardList.do";
+					   }else{
+					    alert("엑셀 파일만 업로드 가능합니다.");
+					   }
+				},
+				error : function(xhr,status,error) {
+					console.log("아작스 오류 :"+error);
+					alert("오류 발생 관리자에게 문의부탁드립니다.");
+				}
+			});
+		})
+		// csv 업로드 관련
+        $('#csv_upload').click(function(){
+			  let formData = new FormData($('#fileUploadForm')[0]); // FormData 객체 생성
+			  let fileInput = $('#csvfile')[0];
+			  if(fileInput.files.length===0){
+				  alert("파일을 선택해주세요.");
+				  return false;
+			  }
+			$.ajax({
+				type : 'POST',
+				data : formData,
+				url : "csvBoardInsert.do",
+				cache : false,
+			    processData: false,
+			    contentType: false,
+				success : function(data) {
+					   if(data.result == "fail"){
+						   alert("csv 파일만 업로드 가능합니다.");
+					   }else{
+						   alert("업로드 완료");
+						   location.href ="/boardList.do";
+					   }
+				},
+				error : function(xhr,status,error) {
+					console.log("아작스 오류 :"+error);
+					alert("오류 발생 관리자에게 문의부탁드립니다.");
+				}
+			});
+		})
+	})
+</script>
