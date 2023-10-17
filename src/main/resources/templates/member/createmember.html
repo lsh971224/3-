@@ -81,7 +81,6 @@ th a {
 </div>
 <div class="div_frm">
     <form id="frm" name="frm">
-        <div class="div1" style="text-align:center; margin-top:10px">회원가입</div>
         <table>
             <tr>
                 <th><label for="email">아이디</label></th>
@@ -107,6 +106,13 @@ th a {
                 <th><label for="name">이름</label></th>
                 <td>
                     <input type="text" name="name" id="name" placeholder="이름을 입력하세요."/>
+                </td>
+            </tr>
+            <tr>
+                <th><label>관리자/일반 회원가입</label></th>
+                <td>
+                    <input type="radio" name="role" value="admin"/>관리자
+                    <input type="radio" name="role" value="user"/>일반 회원
                 </td>
             </tr>
         </table>
@@ -138,7 +144,9 @@ th a {
 		});
 
 	});
+    function role_check(){
 
+    }
 	function id_check() {
 		var email = $.trim($('#email').val());
 		if (email === "") {
@@ -208,10 +216,15 @@ th a {
 
 
 	function formData_send() {
-		var email = $.trim($('#email').val());
-		var name = $.trim($('#name').val());
-		var pass = $.trim($('#pass').val());
+		let email = $.trim($('#email').val());
+		let name = $.trim($('#name').val());
+		let pass = $.trim($('#pass').val());
+        let user_role = $('input[name=role]:checked').val();
 
+        if(user_role ===undefined){
+            alert("회원 권한 선택해주세요");
+            return false;
+        }
 		if (email === "") {
 			alert("아이디는 필수입니다.");
 			$('#email').focus();

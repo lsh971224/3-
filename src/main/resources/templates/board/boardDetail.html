@@ -13,6 +13,7 @@
 <input type="hidden" th:value="${memberId}" id="board_memberId"/>
 <input type="hidden" th:value="${board.id}" id="boardId"/>
 <input type="hidden" th:value="${page}" id="pageNo"/>
+<input type="hidden" th:value="${role}" id="role"/>
 <form  id="frm" >
     <table>
         <caption>게시판 상세</caption>
@@ -48,6 +49,7 @@
                 <button type="button" id="backPage">목록</button>
                 <button type="button" id="btn_modify">수정</button>
                 <button type="button" id="btn_delete">삭제</button>
+                <button type="button" id="btn_report">신고</button>
             </th>
         </tr>
     </table>
@@ -59,11 +61,18 @@
 		let board_memberId = $('#board_memberId').val();
 		let boardId = $('#boardId').val();
 		let page = $('#pageNo').val();
-		if(login_Id !== board_memberId){
+		let user_role = $('#role').val();
+		if(login_Id !== board_memberId && user_role!='ROLE_ADMIN'){
 		    $('#btn_modify').hide();
 	        $('#btn_delete').hide();
 		}
-
+        $('#btn_report').click(function(){
+            if(login_Id==""){
+                alert("신고는 로그인한 유저만 가능합니다.");
+                return false;
+            }
+            window.open("boardReport.do?boardId="+boardId,'게시글 신고','width=600,height=100');
+        });
 		$('#btn_modify').click(function(){
 			location.href = "boardModify.do?boardId="+boardId+"&page="+page;
 		});

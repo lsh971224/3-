@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link th:href="@{/css/board.css}" rel="stylesheet" />
+  <script src="https://code.jquery.com/jquery-3.7.0.js"
+          integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM="
+          crossorigin="anonymous"></script>
+</head>
+<body>
+<input type="hidden" id="boardId" th:value="${result.id}"/>
+<table>
+  <caption>신고 리스트</caption>
+  <thead>
+  <tr>
+    <th width="33%">욕설</th>
+    <th width="33%">성적 비하</th>
+    <th width="33%">도배</th>
+  </tr>
+  </thead>
+  <tbody th:each="entry : ${result.reportType}">
+    <tr>
+      <td th:text="${entry.value}"></td>
+    </tr>
+  </tbody>
+
+</table>
+</body>
+</html>

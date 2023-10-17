@@ -43,4 +43,9 @@ public interface BoardService {
     void csvInsertBoard(BoardDto boardDTO) throws Exception;
 
     void excelinsertBoard(BoardDto data);
+
+    List<BoardDto> selectReportAll();
+
+
+    BoardDto reportBoardList(Long boardId);
 }

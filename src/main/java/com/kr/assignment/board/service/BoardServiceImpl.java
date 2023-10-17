@@ -12,6 +12,9 @@ import com.kr.assignment.file.service.FileService;
 import com.kr.assignment.member.dto.MemberDto;
 import com.kr.assignment.member.entity.Member;
 import com.kr.assignment.member.repository.MemberRepository;
+import com.kr.assignment.report.dto.ReportDto;
+import com.kr.assignment.report.entity.Report;
+import com.kr.assignment.report.repository.ReportRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -27,10 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityManagerFactory;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +40,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final FileRepository fileRepository;
+    private final ReportRepository reportRepository;
     @Autowired
     private Environment environment;
 
@@ -107,6 +108,47 @@ public class BoardServiceImpl implements BoardService {
                     .build();
             boardRepository.save(b);
         }
+    }
+
+    @Override
+    public List<BoardDto> selectReportAll() {
+        List<Board> boards = boardRepository.findAll();
+        List<BoardDto> boardDtos = new ArrayList<>();
+        for(Board b : boards){
+            if(b.getBoard_report()!=0){
+                BoardDto boardDto = BoardDto.builder()
+                        .id(b.getId())
+                        .name(b.getName())
+                        .title(b.getTitle())
+                        .board_report(b.getBoard_report())
+                        .build();
+                boardDtos.add(boardDto);
+            }
+        }
+        return boardDtos;
+    }
+
+    @Override
+    public BoardDto reportBoardList(Long boardId) {
+        Map<String, Integer> reportType = new HashMap<>();
+        Optional<Board> board = boardRepository.findById(boardId);
+        List<ReportDto> reportDtos = new ArrayList<>();
+        int a=0,b=0,c=0;
+        for (Report r : board.get().getReports()) {
+            if(r.getReportContent().equals("욕설")){
+                a++;
+                reportType.put("욕설",a);
+            }else if(r.getReportContent().equals("성적 비하")){
+                b++;
+                reportType.put("성적 비하",b);
+            }else{
+                c++;
+                reportType.put("도배",c);
+            }
+        }
+        BoardDto boardDto = BoardDto.builder().reportType(reportType).id(boardId).build();
+        return boardDto;
+
     }
 
     @Override

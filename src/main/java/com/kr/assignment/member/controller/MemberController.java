@@ -59,6 +59,8 @@ public class MemberController {
             session.setAttribute("id",loginResult.getMember_id());
             session.setAttribute("name", loginResult.getName());
             session.setAttribute("email", loginResult.getEmail());
+            session.setAttribute("role",loginResult.getRole());
+            log.info("세션의 저장된 role ="+session.getAttribute("role"));
             Cookie cookie;
             if(vo.isRemember_id()){
                 cookie = new Cookie("id", loginResult.getEmail());
@@ -79,6 +81,7 @@ public class MemberController {
         session.removeAttribute("name");
         session.removeAttribute("email");
         session.removeAttribute("id");
+        session.removeAttribute("role");
         return "member/login";
     }
 }

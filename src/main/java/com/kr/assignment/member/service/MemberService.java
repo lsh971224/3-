@@ -12,4 +12,5 @@ public interface MemberService {
     MemberDto loginCheck(MemberDto vo) throws Exception;
 
     MemberDto selectMemberDto(String email) throws Exception;
+
 }

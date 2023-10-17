@@ -2,11 +2,14 @@ package com.kr.assignment.member.service;
 
 import com.kr.assignment.member.dto.MemberDto;
 import com.kr.assignment.member.entity.Member;
+import com.kr.assignment.member.entity.Role;
 import com.kr.assignment.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,10 +21,12 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public String insertMember(MemberDto memberDto) throws Exception {
+        Role role = Role.getRoleFromString(memberDto.getRole());
         Member member =
                 Member.builder().pass(memberDto.getPass())
                                 .name(memberDto.getName())
                                         .email(memberDto.getEmail())
+                                        .role(role)
                                                 .build();
         Member memberSave = memberRepository.save(member);
         if (memberSave != null) {
@@ -52,6 +57,7 @@ public class MemberServiceImpl implements MemberService {
                 dto.setEmail(selectMember.getEmail());
                 dto.setMember_id(selectMember.getMember_id());
                 dto.setName(selectMember.getName());
+                dto.setRole(selectMember.getRole().getValue());
                 return dto;
             }
         }
@@ -65,6 +71,8 @@ public class MemberServiceImpl implements MemberService {
         MemberDto memberDto = MemberDto.builder().name(member.getName()).member_id(member.getMember_id()).build();
         return memberDto;
     }
+
+
 
 
 }

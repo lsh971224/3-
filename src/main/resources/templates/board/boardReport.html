@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.0.js"
+            integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM="
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<input type="hidden" id="boardId" name="boardId" th:value="${boardId}"/>
+<table>
+    <caption>신고 리스트</caption>
+    <tr>
+        <th>신고 종류</th>
+        <td>
+            <input type="radio" name="report" value="욕설"/>욕설
+            <input type="radio" name="report" value="성적 비하"/>성적 비하
+            <input type="radio" name="report" value="도배"/>도배
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <button id="btn_report">완료</button>
+        </td>
+    </tr>
+</table>
+</body>
+<script>
+    $(function(){
+        $('#btn_report').click(function(){
+            let report = $('input[name=report]:checked').val();
+            if(report==undefined){
+                alert("신고 옵션 선택해주세요.");
+                return false;
+            }
+            let boardId = $('#boardId').val();
+            console.log("boardId==="+boardId);
+            let dataToSend = {
+                board_Id : boardId,
+                reportContent : report
+            };
+
+            $.ajax({
+               url:"boardReportSave.do",
+               method :"POST",
+               data:JSON.stringify(dataToSend),
+               contentType: "application/json; charset=utf-8",
+               dataType: "json",
+               success: function (data) {
+                    if(data.result=='성공'){
+                        alert("성공적으로 신고가 접수되었습니다.");
+                         window.close();
+                    }else{
+                        alert("신고 접수가 실패하였습니다.");
+                        return ;
+                    }
+               },
+               error: function (error) {
+                    alert("오류 발생 관리자에게 문의 해주세요.");
+               }
+               });
+
+            });
+    });
+</script>
+</html>

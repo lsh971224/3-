@@ -124,11 +124,13 @@ public class BoardController {
 
     //게시글 상세보기
     @GetMapping("/boardDetail.do")
-    public String boardShowDetail(Model model, @RequestParam("id") Long id,int page) throws Exception{
+    public String boardShowDetail(Model model, @RequestParam("id") Long id,int page,HttpSession session) throws Exception{
         // 조회수 증가
         boardService.updateBoardCnt(id);
         BoardDto boardDto = boardService.selectBoardDto(id);
         Long memberId = boardDto.getMemberId();
+        String member_role = (String)session.getAttribute("role");
+        log.info("유저 권한 ==="+member_role);
         if(boardDto.getFileId()!=null){
             FileDto fileDto = fileService.getFile(boardDto.getFileId());
             int lastIndex = fileDto.getFileName().lastIndexOf(".");
@@ -142,6 +144,7 @@ public class BoardController {
         boardDto.setContent(boardDto.getContent().replaceAll("\n","<br>"));
         model.addAttribute("memberId",memberId);
         model.addAttribute("board",boardDto);
+        model.addAttribute("role",member_role);
         return "board/boardDetail";
     }
 
@@ -357,4 +360,12 @@ public class BoardController {
         }
         return listStrings;
     }
+
+    @GetMapping("/boardReport.do")
+    public String boardReport(@RequestParam("boardId") Long boardId,Model model){
+        model.addAttribute("boardId",boardId);
+        return "board/boardReport";
+    }
+
+
 }

@@ -9,7 +9,8 @@
 <nav>
 <table th:fragment="nav">
   <tr>
-    <th width="25%">홈</th>
+    <th width="25%" th:if="${session.role != 'ROLE_ADMIN'}">홈</th>
+    <th width="25%" th:if="${session.role == 'ROLE_ADMIN'}"><a th:href="@{/adminCare.do}">관리자 페이지</a></th>
     <th width="25%"><a th:href="@{/boardList.do}">게시판</a></th>
     <th width="25%" th:if="${session.name == null}"><a th:href="@{/createMember.do}">회원가입</a></th>
     <th width="25%" th:if="${session.name == null}"><a th:href="@{/loginMember.do}">로그인</a></th>

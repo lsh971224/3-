@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link th:href="@{/css/board.css}" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.0.js"
+          integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM="
+          crossorigin="anonymous"></script>
+    <style>
+        .top {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="topNavContainer">
+      <div id="ss" th:replace="include/topnav.html :: nav"></div>
+    </div>
+    <div class="top">
+      <div class="div1">게시글 신고 목록</div>
+      <div style="overflow:scroll; width:650px; height:300px; overflow-x: hidden">
+        <table>
+          <thead>
+              <tr>
+                <th width="15%">번호</th>
+                <th width="70%">글제목</th>
+                <th width="15%">신고수</th>
+              </tr>
+          </thead>
+          <tbody>
+             <tr align="center" th:each="vo,voStatus:${reportList}">
+                  <td th:text="${voStatus.count}"></td>
+                  <td align="left">
+<!--                    <a th:href="@{boardReport?boardId=${vo.boardId}} " th:text="${vo.title}">게시물 제목</a>-->
+                      <a th:href="@{#}"  id="report_board" th:text="${vo.title}" th:data-boardId="${vo.id}">게시물 제목</a>
+                  </td>
+                  <td th:text="${vo.board_report}"></td>
+                  </td>
+            </tr>
+            </c:forEach>
+            <tr th:if="${reportList == null or reportList.isEmpty()}">
+                  <td colspan="3">신고된 게시글이 존재하지 않습니다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+</body>
+<script>
+    $(function(){
+           $('#report_board').click(function(){
+                let boardId = $(this).data("boardId");
+                let reportUrl="/boardReportDetail?boardId="+boardId;
+                window.open(reportUrl,'게시판 신고 종류','width:600px;height:300px;');
+           });
+    });
+
+
+</script>
+</html>

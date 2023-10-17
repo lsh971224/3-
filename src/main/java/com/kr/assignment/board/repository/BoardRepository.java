@@ -9,4 +9,5 @@ public interface BoardRepository extends JpaRepository<Board,Long> {
     Page<Board> findByTitleContainingOrNameContaining(String name, String title, Pageable pageable);
 
     Board findByName(String name);
+
 }
